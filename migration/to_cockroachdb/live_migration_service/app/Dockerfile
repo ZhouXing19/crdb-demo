@@ -6,6 +6,7 @@ COPY go.* /src
 
 RUN CGO_ENABLED=0 GOOS=linux go build -o /app ./main.go
 
+
 # Build
 FROM alpine:3.18
 COPY --from=build app .

@@ -14,10 +14,10 @@ spec:
         app: app
     spec:
       containers:
-      - image: k3d-local-registry:9090/app:latest
-        imagePullPolicy: Always
+      - image: app:latest
+        imagePullPolicy: Never
         name: app
         env:
         - name: CONNECTION_STRING
-          # value: root:password@tcp(mysql:3306)/defaultdb
-          value: root:password@tcp(lms.lms.svc.cluster.local:9043)/defaultdb
+          # value: root:password@tcp(lms-mysql.default.svc.cluster.local:3306)/defaultdb
+          value: root:password@tcp(lms.default.svc.cluster.local:9043)/defaultdb

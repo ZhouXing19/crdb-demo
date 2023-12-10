@@ -15,3 +15,7 @@
 go.work
 
 csvs
+
+.DS_Store
+
+.idea

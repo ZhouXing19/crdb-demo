@@ -13,16 +13,14 @@
 #  limitations under the License.
 
 global:
-  lmsInitSource: 'mysql://root:password@mysql.default.svc.cluster.local:3306/defaultdb?sslmode=disable'
-  lmsInitTarget: 'postgresql://root@cockroachdb-public.crdb.svc.cluster.local:26257/defaultdb?sslmode=disable'
+  lmsInitSource: 'mysql://root:password@{{ .Release.Name }}-mysql.{{ .Release.Namespace }}.svc.cluster.local:3306/defaultdb?sslmode=disable'
+  lmsInitTarget: 'postgresql://root@{{ .Release.Name }}-cockroachdb-public.{{ .Release.Namespace }}.svc.cluster.local:26257/defaultdb?sslmode=disable'
   lmsURL: 'mysql://root:password@(lms.{{ .Release.Namespace }}.svc.cluster.local:9043)/defaultdb'
 
 lms:
-  image:
-    repository: k3d-local-registry:9090/cockroachdb/molt-lms
-    tag: latest
   lms:
-    replicaCount: 3
+    replicaCount: 1
+    # sourceDialect is actually the driver dialect of the proxy. Now we only accept mysql and pg.
     sourceDialect: "mysql"
     shadowMode: none
     logLevel: info
@@ -78,11 +76,27 @@ prometheus:
     global:
       scrape_interval: 15s
 
-# # Keep for now as this is a testing chart and we don't need to
-# # enable tls
-# cockroachdb:
-#   tls:
-#     enabled: false
+# Keep for now as this is a testing chart and we don't need to
+# enable tls
+cockroachdb:
+  tls:
+    enabled: false
+
+cockroachdbtarget:
+  tls:
+    enabled: false
+  conf:
+    port: 26258
+    http-port: 8081
+  service:
+    ports:
+      grpc:
+        external:
+          port: 26258
+        internal:
+          port: 26258
+      http:
+        port: 8081
 
 mysql:
   auth:
@@ -201,6 +215,8 @@ deps:
   promtail:
     enabled: true
   mysql:
-    enabled: false
+    enabled: true
   postgresql:
+    enabled: false
+  cockroachtarget:
     enabled: false

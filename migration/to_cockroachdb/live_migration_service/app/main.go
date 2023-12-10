@@ -33,6 +33,7 @@ func main() {
 }
 
 func work(db *sql.DB) error {
+	insertedCnt := 0
 	for range time.NewTicker(time.Second * 1).C {
 		id := uuid.NewString()
 
@@ -41,6 +42,8 @@ func work(db *sql.DB) error {
 		if _, err := db.Exec(stmt, id, uuid.NewString(), uuid.NewString(), rand.Float64()*100); err != nil {
 			return fmt.Errorf("inserting purchase: %w", err)
 		}
+
+		insertedCnt++
 
 		// Select purchase.
 		stmt = `SELECT amount FROM purchase WHERE id = ?`
@@ -61,7 +64,7 @@ func work(db *sql.DB) error {
 		}
 
 		// Feedback.
-		log.Printf("ok (%s)", strings.Split(version, "(")[0])
+		log.Printf("inserted: [%d], ok (%s)", insertedCnt, strings.Split(version, "(")[0])
 	}
 
 	return fmt.Errorf("application unexpectedly exited")

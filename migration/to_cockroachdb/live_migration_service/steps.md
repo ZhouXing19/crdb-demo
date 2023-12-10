@@ -110,10 +110,11 @@ docker push localhost:9090/cockroachdb/molt-lms:latest
 # Install the LMS into the cluster (just run install if offline)
 (cd helm-molt-lms && helm dependency update)
 
-(cd helm-molt-lms && helm install \
-  --create-namespace \
-  --namespace lms \
-  -f values.yaml lms .)
+(
+helm install \
+  --namespace default \
+  -f helm-molt-lms-0-2-3/values.yaml lms helm-molt-lms-0-2-3
+  )
 
 # Port forward to all of the lms services
 kubectl -n lms port-forward svc/lms 9043:9043 & \
